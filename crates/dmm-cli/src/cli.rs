@@ -227,6 +227,7 @@ pub(crate) enum Cmd {
     /// Guided protocol capture for bug reports and verification
     Capture(CaptureArgs),
     /// Serve the meter to an AI agent as Model Context Protocol tools on stdin/stdout
+    #[cfg(feature = "mcp")]
     Mcp,
     /// Read a capture report with this build's parser, no meter needed.
     /// Hidden: a maintainer tool for the reports reporters attach.
@@ -1380,6 +1381,7 @@ stay as they are. clap's own words around these texts (Usage:, Options:,
 
     /// `cli-help.ftl` holds the doc comments as they are now.
     #[test]
+    #[cfg_attr(not(feature = "mcp"), ignore = "cli-help.ftl has the mcp command")]
     fn cli_help_ftl_follows_the_doc_comments() {
         use std::io::Write;
         let path = Path::new(CLI_HELP_PATH);

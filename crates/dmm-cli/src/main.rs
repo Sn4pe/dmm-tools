@@ -16,6 +16,7 @@ use cmd::command::cmd_command;
 use cmd::debug::cmd_debug;
 use cmd::info::cmd_info;
 use cmd::list::cmd_list;
+#[cfg(feature = "mcp")]
 use cmd::mcp::cmd_mcp;
 use cmd::read::ReadPlan;
 use cmd::settings::{cmd_get, cmd_set};
@@ -188,6 +189,7 @@ fn main() {
         ),
         Cmd::Debug { count, interval_ms } => cmd_debug(selection, opts, count, interval_ms),
         Cmd::Capture(args) => run_capture(args, selection, opts),
+        #[cfg(feature = "mcp")]
         Cmd::Mcp => cmd_mcp(selection, opts),
     };
 
@@ -248,8 +250,9 @@ fn opens_the_pick(command: &Cmd) -> bool {
         | Cmd::Get { .. }
         | Cmd::Set { .. }
         | Cmd::Debug { .. }
-        | Cmd::Capture(_)
-        | Cmd::Mcp => true,
+        | Cmd::Capture(_) => true,
+        #[cfg(feature = "mcp")]
+        Cmd::Mcp => true,
     }
 }
 

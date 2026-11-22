@@ -5,6 +5,7 @@ pub(crate) mod command;
 pub(crate) mod debug;
 pub(crate) mod info;
 pub(crate) mod list;
+#[cfg(feature = "mcp")]
 pub(crate) mod mcp;
 pub(crate) mod read;
 pub(crate) mod settings;

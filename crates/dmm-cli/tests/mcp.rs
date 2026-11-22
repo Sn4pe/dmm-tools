@@ -1,6 +1,7 @@
 //! `mcp` speaks the Model Context Protocol on stdio against the mock: a
 //! client's session from the handshake to a tool error, and stdout carrying
 //! nothing but protocol messages.
+#![cfg(feature = "mcp")]
 
 mod common;
 

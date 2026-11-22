@@ -253,7 +253,8 @@ each reading (`format.rs`) and writes it where the run says (`output.rs`). `capt
 run that walks a meter through its protocol's steps and writes a YAML report with the raw bytes; its
 design is in [capture-design.md](capture-design.md). `mcp` serves readings and button presses as
 Model Context Protocol tools on stdio through `rmcp`, opening the meter on the first call and again
-after it stops answering; readings keep the JSON export's shape. User-facing behaviour is in
+after it stops answering; readings keep the JSON export's shape. It sits behind the default `mcp`
+feature: without it `rmcp` and the crates it brings are not built in. User-facing behaviour is in
 [cli-reference.md](cli-reference.md).
 
 ### GUI

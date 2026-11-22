@@ -25,8 +25,13 @@ csv.workspace = true
 fluent-syntax = "0.12.0" # the capture instruction files; already in the tree for fluent-bundle
 # `mcp`: the official Model Context Protocol SDK, which follows the spec's
 # revisions; tokio is its runtime, already in the tree for Bluetooth.
-rmcp = { version = "3.11", default-features = false, features = ["server", "macros", "transport-io"] }
-tokio = { version = "1", features = ["rt", "io-std"] }
+rmcp = { version = "3.11", default-features = false, features = ["server", "macros", "transport-io"], optional = true }
+tokio = { version = "1", features = ["rt", "io-std"], optional = true }
+
+[features]
+default = ["mcp"]
+# The `mcp` command. Without it rmcp and the crates it brings are not built in.
+mcp = ["dep:rmcp", "dep:tokio"]
 
 # Embeds the icon Explorer shows for dmm-cli.exe (build.rs).
 [build-dependencies]

@@ -150,6 +150,10 @@ pub(crate) trait Localized: std::error::Error + 'static {
 
     /// What to try, in `l`'s language, for a reader that gets only this
     /// error and not the help printed before it: an agent over `dmm-cli mcp`.
+    #[cfg_attr(
+        not(any(feature = "mcp", test)),
+        expect(dead_code, reason = "read by the mcp command")
+    )]
     fn steps(&self, _l: &Localizer) -> Option<String> {
         None
     }
@@ -211,6 +215,10 @@ impl Failure {
     }
 
     /// What to try, when the failure carries steps ([`Localized::steps`]).
+    #[cfg_attr(
+        not(feature = "mcp"),
+        expect(dead_code, reason = "read by the mcp command")
+    )]
     pub(crate) fn steps(&self, l: &Localizer) -> Option<String> {
         match self {
             Self::Ours(e) => e.steps(l),

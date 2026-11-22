@@ -698,6 +698,10 @@ pub(crate) enum OpenFailed {
     /// Nothing answered on the cable; its bridge, which says what the
     /// meters it carries need switching on.
     NotIdentified {
+        #[cfg_attr(
+            not(any(feature = "mcp", test)),
+            expect(dead_code, reason = "read by the mcp command")
+        )]
         bridge: &'static str,
     },
     AdapterNotFound,

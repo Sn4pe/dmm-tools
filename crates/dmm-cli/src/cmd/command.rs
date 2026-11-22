@@ -55,6 +55,10 @@ pub(crate) struct UnknownCommand {
 }
 
 impl UnknownCommand {
+    #[cfg_attr(
+        not(feature = "mcp"),
+        expect(dead_code, reason = "read by the mcp command")
+    )]
     pub(crate) fn new(
         meter: &'static str,
         command: String,

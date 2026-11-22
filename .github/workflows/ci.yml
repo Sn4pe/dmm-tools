@@ -42,6 +42,8 @@ jobs:
       # Likewise the GUI without its update check, the build for anyone who
       # wants no outbound network access at all.
       - run: cargo check -p dmm-gui --no-default-features
+      # And the CLI without its MCP server and the crates that brings.
+      - run: cargo check -p dmm-cli --no-default-features
 
   # Clippy and the tests on the other platforms the releases ship for: code
   # behind a cfg for one OS, and a test that only fails there, pass unseen on
