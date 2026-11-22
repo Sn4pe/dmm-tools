@@ -54,6 +54,20 @@ pub(crate) struct UnknownCommand {
     commands: &'static [&'static str],
 }
 
+impl UnknownCommand {
+    pub(crate) fn new(
+        meter: &'static str,
+        command: String,
+        commands: &'static [&'static str],
+    ) -> Self {
+        Self {
+            meter,
+            command,
+            commands,
+        }
+    }
+}
+
 impl crate::l10n::Localized for UnknownCommand {
     fn text<'a>(&'a self, l: &'a Localizer) -> std::borrow::Cow<'a, str> {
         let meter = l.label(TextKind::Model, self.meter);

@@ -251,7 +251,9 @@ One module per subcommand under `cmd/`, except `capture`, which has a module of 
 `capture/`. All of them open the meter through `open.rs`. `read` formats
 each reading (`format.rs`) and writes it where the run says (`output.rs`). `capture` is the guided
 run that walks a meter through its protocol's steps and writes a YAML report with the raw bytes; its
-design is in [capture-design.md](capture-design.md). User-facing behaviour is in
+design is in [capture-design.md](capture-design.md). `mcp` serves readings and button presses as
+Model Context Protocol tools on stdio through `rmcp`, opening the meter on the first call and again
+after it stops answering; readings keep the JSON export's shape. User-facing behaviour is in
 [cli-reference.md](cli-reference.md).
 
 ### GUI

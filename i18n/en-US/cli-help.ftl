@@ -150,3 +150,6 @@ capture--export-instructions =
 # dmm-cli capture --instructions
 capture--instructions =
     .help = Show the step instructions from FILE, translated from what --export-instructions wrote
+# dmm-cli mcp
+mcp =
+    .about = Serve the meter to an AI agent as Model Context Protocol tools on stdin/stdout

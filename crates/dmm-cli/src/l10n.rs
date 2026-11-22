@@ -147,6 +147,12 @@ pub(crate) fn english() -> &'static Localizer {
 pub(crate) trait Localized: std::error::Error + 'static {
     /// The error in `l`'s language.
     fn text<'a>(&'a self, l: &'a Localizer) -> Cow<'a, str>;
+
+    /// What to try, in `l`'s language, for a reader that gets only this
+    /// error and not the help printed before it: an agent over `dmm-cli mcp`.
+    fn steps(&self, _l: &Localizer) -> Option<String> {
+        None
+    }
 }
 
 /// `Display`, in English, and `Error` for a [`Localized`] type, and its
@@ -201,6 +207,14 @@ impl Failure {
             Self::Ours(e) => e.text(l).into_owned(),
             Self::Io(e) => e.to_string(),
             Self::Text(text) => text.clone(),
+        }
+    }
+
+    /// What to try, when the failure carries steps ([`Localized::steps`]).
+    pub(crate) fn steps(&self, l: &Localizer) -> Option<String> {
+        match self {
+            Self::Ours(e) => e.steps(l),
+            _ => None,
         }
     }
 

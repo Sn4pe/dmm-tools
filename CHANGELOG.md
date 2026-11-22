@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### CLI
+
+- **`dmm-cli mcp` lets AI agents read the meter and press buttons** — as Model Context Protocol tools.
+
 ## v0.11.0 — Android Support
 
 dmm-gui runs on Android, over Bluetooth and USB cables. Reference values and alarm limits take a unit. The UNI-T UT71D is partly verified. Fixes make the graph, imported and replayed recordings, and reconnecting more dependable.

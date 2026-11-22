@@ -226,6 +226,8 @@ pub(crate) enum Cmd {
     },
     /// Guided protocol capture for bug reports and verification
     Capture(CaptureArgs),
+    /// Serve the meter to an AI agent as Model Context Protocol tools on stdin/stdout
+    Mcp,
     /// Read a capture report with this build's parser, no meter needed.
     /// Hidden: a maintainer tool for the reports reporters attach.
     #[command(hide = true)]

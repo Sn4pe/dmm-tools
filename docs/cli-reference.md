@@ -19,7 +19,7 @@ Communicates with digital multimeters over USB or Bluetooth. Supports
 [listing](#dmm-cli-list) and [inspecting](#dmm-cli-info) connected meters, live
 [measurement reading](#dmm-cli-read), [reading](#dmm-cli-get) and
 [switching](#dmm-cli-set) settings, [button commands](#dmm-cli-command),
-[protocol debugging](#dmm-cli-debug), guided [data capture](#dmm-cli-capture)
+[tools for AI agents](#dmm-cli-mcp), [protocol debugging](#dmm-cli-debug), guided [data capture](#dmm-cli-capture)
 for verification, and [shell completions](#dmm-cli-completions). See
 [supported devices](supported-devices.md) for the full compatibility list.
 
@@ -652,6 +652,26 @@ No remote commands: these meters only send readings
 ```bash
 dmm-cli command hold
 dmm-cli --device ut181a command hold
+```
+
+### dmm-cli mcp
+
+Serve the meter to an AI agent (Claude Code, Claude Desktop, Cursor or any
+other [Model Context Protocol](https://modelcontextprotocol.io) client) as
+tools on stdin and stdout. The client starts the command itself. The meter is
+opened on the first tool call, and again after it stops answering.
+
+| Tool | Arguments | What it does |
+|---|---|---|
+| `read` | — | One reading, in the shape of [`read --format json`](#dmm-cli-read). |
+| `sample` | `count` (1–1000, default 10), `interval_ms` (default 500) | That many readings, each as its time, value and unit, with min, max, mean and standard deviation of the last series. Returns within 50 seconds, with what it has. |
+| `press` | `command` | Presses a button, as [`dmm-cli command`](#dmm-cli-command). |
+
+```bash
+# Claude Code
+claude mcp add dmm -- dmm-cli mcp
+# With a meter named, as for any other command
+claude mcp add dmm -- dmm-cli --device ut61eplus mcp
 ```
 
 ### dmm-cli debug

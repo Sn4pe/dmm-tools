@@ -16,6 +16,7 @@ use cmd::command::cmd_command;
 use cmd::debug::cmd_debug;
 use cmd::info::cmd_info;
 use cmd::list::cmd_list;
+use cmd::mcp::cmd_mcp;
 use cmd::read::ReadPlan;
 use cmd::settings::{cmd_get, cmd_set};
 use console::style;
@@ -187,6 +188,7 @@ fn main() {
         ),
         Cmd::Debug { count, interval_ms } => cmd_debug(selection, opts, count, interval_ms),
         Cmd::Capture(args) => run_capture(args, selection, opts),
+        Cmd::Mcp => cmd_mcp(selection, opts),
     };
 
     open::warn_unrecognised();
@@ -246,7 +248,8 @@ fn opens_the_pick(command: &Cmd) -> bool {
         | Cmd::Get { .. }
         | Cmd::Set { .. }
         | Cmd::Debug { .. }
-        | Cmd::Capture(_) => true,
+        | Cmd::Capture(_)
+        | Cmd::Mcp => true,
     }
 }
 

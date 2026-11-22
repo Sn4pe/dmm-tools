@@ -695,7 +695,11 @@ fn print_experimental_note(selection: Selection) {
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum OpenFailed {
     NotFound,
-    NotIdentified,
+    /// Nothing answered on the cable; its bridge, which says what the
+    /// meters it carries need switching on.
+    NotIdentified {
+        bridge: &'static str,
+    },
     AdapterNotFound,
     /// `--device` named a meter on a cable where only a simulated one
     /// could open; the id it named.
@@ -706,11 +710,40 @@ impl crate::l10n::Localized for OpenFailed {
     fn text<'a>(&'a self, l: &'a Localizer) -> Cow<'a, str> {
         match *self {
             Self::NotFound => tr!(l, "connect-error-not-found"),
-            Self::NotIdentified => tr!(l, "connect-error-not-identified"),
+            Self::NotIdentified { .. } => tr!(l, "connect-error-not-identified"),
             Self::AdapterNotFound => tr!(l, "connect-error-adapter-not-found"),
             Self::NotSimulated(id) => tr!(l, "connect-error-not-simulated", device = id),
         }
     }
+
+    fn steps(&self, l: &Localizer) -> Option<String> {
+        let Self::NotIdentified { bridge } = *self else {
+            return None;
+        };
+        let groups: Vec<String> = activation_help(l, bridge)
+            .into_iter()
+            .map(|(names, steps)| format!("{names}:\n{steps}"))
+            .collect();
+        Some(groups.join("\n\n"))
+    }
+}
+
+/// The meters `bridge` can carry, grouped by the steps that switch on their
+/// data link: each group's names and its steps, in `l`'s language.
+fn activation_help<'l>(l: &'l Localizer, bridge: &'static str) -> Vec<(String, Cow<'l, str>)> {
+    dmm_shared::help::activation_groups(&dmm_lib::devices_on_bridge(bridge))
+        .into_iter()
+        .map(|(instructions, names)| {
+            let names: Vec<Cow<'_, str>> = names
+                .into_iter()
+                .map(|name| l.label(TextKind::Model, name))
+                .collect();
+            (
+                names.join(", "),
+                l.label(TextKind::Activation, instructions),
+            )
+        })
+        .collect()
 }
 
 crate::l10n::localized_error!(OpenFailed);
@@ -774,15 +807,9 @@ fn open_error_help(
             );
             eprintln!("{}", style(headline).yellow().bold());
             print_picked();
-            for (instructions, names) in
-                dmm_shared::help::activation_groups(&dmm_lib::devices_on_bridge(bridge))
-            {
-                let names: Vec<Cow<'_, str>> = names
-                    .into_iter()
-                    .map(|name| l.label(TextKind::Model, name))
-                    .collect();
-                eprintln!("\n{}", style(names.join(", ")).yellow());
-                for line in l.label(TextKind::Activation, instructions).lines() {
+            for (names, steps) in activation_help(l, bridge) {
+                eprintln!("\n{}", style(names).yellow());
+                for line in steps.lines() {
                     eprintln!("{}", style(format!("  {line}")).dim());
                 }
             }
@@ -790,7 +817,7 @@ fn open_error_help(
             for line in not_identified_self_help(l).lines() {
                 eprintln!("{}", style(line).yellow());
             }
-            OpenFailed::NotIdentified.into()
+            OpenFailed::NotIdentified { bridge }.into()
         }
         // An address nothing answered: the bus listing would be beside the
         // point, and the only thing that says which addresses are live is a
@@ -887,6 +914,20 @@ pub(crate) fn open_mock_device(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A cable nothing answered on gives an agent, which never sees the
+    /// printed help, the steps for every meter that cable carries.
+    #[test]
+    fn not_identified_carries_the_steps_for_its_cable() {
+        let l = crate::l10n::english();
+        let failure = OpenFailed::NotIdentified { bridge: "CP2110" };
+        let steps = crate::l10n::Localized::steps(&failure, l).expect("steps");
+        assert!(steps.contains("UT61E+"), "got {steps}");
+        assert_eq!(
+            crate::l10n::Localized::steps(&OpenFailed::NotFound, l),
+            None
+        );
+    }
 
     /// The late-readings notice reads as the library's, each part on a line
     /// of its own, the command last and alone so it copies clean.
